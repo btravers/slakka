@@ -11,10 +11,14 @@ dependencies {
 
     compile group: 'com.typesafe.akka', name: 'akka-actor_2.12', version: '2.5.4'
     compile group: 'com.typesafe.akka', name: 'akka-stream_2.12', version: '2.5.4'
+
+    // AKKA HTTP
+    compile group: 'com.typesafe.akka', name: 'akka-http_2.12', version: '10.0.10'
+    compile group: 'com.typesafe.akka', name: 'akka-http-jackson_2.12', version: '10.0.10'
+
+    // AKKA PERSISTENCE
     compile group: 'com.typesafe.akka', name: 'akka-persistence_2.12', version: '2.5.4'
     compile group: 'com.typesafe.akka', name: 'akka-persistence-query_2.12', version: '2.5.4'
-    compile group: 'com.typesafe.akka', name: 'akka-http_2.12', version: '10.0.10'
-
     compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.7'
     compile group: 'org.fusesource.leveldbjni', name: 'leveldbjni-all', version: '1.8'
 

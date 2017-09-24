@@ -1,9 +1,8 @@
-package slakka.bot.api;
+package slakka.bot.actor;
 
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 import slakka.channel.domain.command.AddBotMessage;
-import slakka.channel.domain.model.BotMessage;
 import slakka.channel.domain.model.Message;
 
 public class BotActor extends AbstractLoggingActor {
