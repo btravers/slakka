@@ -1,9 +1,11 @@
 package slakka.channel.actor;
 
 import akka.actor.AbstractLoggingActor;
+import akka.actor.ActorRef;
 import akka.actor.Props;
 import slakka.channel.domain.command.ChannelCommand;
 import slakka.channel.domain.model.Channel;
+import slakka.channel.exception.ChannelNotFoundException;
 
 import java.util.*;
 
@@ -34,6 +36,15 @@ public class ChannelManager extends AbstractLoggingActor {
             return command;
         }
     }
+    public static class GetChannelMessages {
+        private final UUID id;
+        public GetChannelMessages(UUID id) {
+            this.id = id;
+        }
+        UUID getId() {
+            return id;
+        }
+    }
 
     private final List<Channel> channels = new ArrayList<>();
 
@@ -53,6 +64,7 @@ public class ChannelManager extends AbstractLoggingActor {
                 .match(CreateChannel.class, this::handleCreateChannel)
                 .match(GetChannels.class, this::handleGetChannels)
                 .match(SendCommand.class, this::handleSendCommand)
+                .match(GetChannelMessages.class, this::handleGetChannelMessages)
                 .build();
     }
 
@@ -67,12 +79,19 @@ public class ChannelManager extends AbstractLoggingActor {
     }
 
     private void handleGetChannels(GetChannels getChannels) {
-        sender().tell(this.channels, self());
+        sender().tell(this.channels, getSelf());
     }
 
     private void handleSendCommand(SendCommand sendCommand) {
-        Optional.ofNullable(getContext().getChild(sendCommand.getId().toString()))
-                .ifPresent(child -> child.forward(sendCommand.getCommand(), getContext()));
+        ActorRef channel = Optional.ofNullable(getContext().getChild(sendCommand.getId().toString()))
+                .orElseThrow(ChannelNotFoundException::new);
+        channel.forward(sendCommand.getCommand(), getContext());
+    }
+
+    private void handleGetChannelMessages(GetChannelMessages getChannelMessages) {
+        ActorRef channel = Optional.ofNullable(getContext().getChild(getChannelMessages.getId().toString()))
+                .orElseThrow(ChannelNotFoundException::new);
+        channel.forward(new ChannelActor.GetMessages(), getContext());
     }
 
     public static Props props() {

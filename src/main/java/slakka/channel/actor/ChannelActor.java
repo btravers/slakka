@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public class ChannelActor extends AbstractPersistentActor {
 
+    public static class GetMessages {}
+
     private final int snapshotInterval = 1000;
     private final UUID id;
     private ChannelState state;
@@ -37,17 +39,24 @@ public class ChannelActor extends AbstractPersistentActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(ChannelCommand.class, (cmd) -> {
-                    List<ChannelEvent> events = this.state.handleCommand(cmd, this.self());
-                    persistAll(events, (event) -> {
-                        this.state.applyEvent(event);
-                        getContext().getSystem().eventStream().publish(event);
-                        if (lastSequenceNr() % this.snapshotInterval == 0 && lastSequenceNr() != 0) {
-                            saveSnapshot(this.state.copy());
-                        }
-                    });
-                })
+                .match(ChannelCommand.class, this::handleChannelCommand)
+                .match(GetMessages.class, this::handleGetMessages)
                 .build();
+    }
+
+    private void handleChannelCommand(ChannelCommand channelCommand) {
+        List<ChannelEvent> events = this.state.handleCommand(channelCommand, getSelf());
+        persistAll(events, (event) -> {
+            this.state.applyEvent(event);
+            getContext().getSystem().eventStream().publish(event);
+            if (lastSequenceNr() % this.snapshotInterval == 0 && lastSequenceNr() != 0) {
+                saveSnapshot(this.state.copy());
+            }
+        });
+    }
+
+    private void handleGetMessages(GetMessages getMessages) {
+        getSender().tell(this.state.getMessages(), getSelf());
     }
 
     public static Props props(UUID id, String name) {
