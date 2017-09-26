@@ -83,13 +83,13 @@ public class ChannelManager extends AbstractLoggingActor {
     }
 
     private void handleSendCommand(SendCommand sendCommand) {
-        ActorRef channel = Optional.ofNullable(getContext().getChild(sendCommand.getId().toString()))
+        ActorRef channel = getContext().findChild(sendCommand.getId().toString())
                 .orElseThrow(ChannelNotFoundException::new);
         channel.forward(sendCommand.getCommand(), getContext());
     }
 
     private void handleGetChannelMessages(GetChannelMessages getChannelMessages) {
-        ActorRef channel = Optional.ofNullable(getContext().getChild(getChannelMessages.getId().toString()))
+        ActorRef channel = getContext().findChild(getChannelMessages.getId().toString())
                 .orElseThrow(ChannelNotFoundException::new);
         channel.forward(new ChannelActor.GetMessages(), getContext());
     }
