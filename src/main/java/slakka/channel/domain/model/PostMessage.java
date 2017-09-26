@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class PostMessage implements Serializable {
 
-    private final String content;
+    private String content;
 
-    public PostMessage(String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
