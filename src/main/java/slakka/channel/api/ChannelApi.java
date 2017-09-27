@@ -31,16 +31,18 @@ public class ChannelApi extends AllDirectives {
 
     public Route createRoute() {
         return pathPrefix(segment("channels"), () -> route(
-                pathEnd(() ->
-                        get(this::handleGetChannels)
-                ),
+                pathEnd(() -> route(
+                        get(this::handleGetChannels),
+                        options(() -> complete(StatusCodes.OK))
+                )),
                 pathPrefix(uuidSegment(), id ->
                         pathPrefix(segment("messages"), () -> route(
                                 get(() -> this.handleGetMassagesForChannel(id)),
                                 post(() -> entity(
                                         Jackson.unmarshaller(PostMessage.class),
                                         postMessage -> this.handlePostMessageForChannel(id, postMessage)
-                                ))
+                                )),
+                                options(() -> complete(StatusCodes.OK))
                         ))
                 )
         ));
