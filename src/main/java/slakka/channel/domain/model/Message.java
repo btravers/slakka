@@ -1,16 +1,16 @@
 package slakka.channel.domain.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 public abstract class Message implements Serializable {
 
     private final UUID id;
-    private final LocalDate date;
+    private final long date;
     private final String content;
 
-    protected Message(UUID id, LocalDate date, String content) {
+    protected Message(UUID id, long date, String content) {
         this.id = id;
         this.date = date;
         this.content = content;
@@ -20,7 +20,7 @@ public abstract class Message implements Serializable {
         return id;
     }
 
-    public LocalDate getDate() {
+    public long getDate() {
         return date;
     }
 
