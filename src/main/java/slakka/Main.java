@@ -10,7 +10,7 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
-import slakka.channel.actor.ChannelManager;
+import slakka.channel.manager.actor.ChannelManagerActor;
 import slakka.channel.api.ChannelApi;
 
 import java.util.concurrent.CompletionStage;
@@ -21,7 +21,7 @@ public class Main {
         final ActorSystem system = ActorSystem.create("slakka");
 
         // CHANNEL MANAGER
-        final ActorRef channelManager = system.actorOf(ChannelManager.props());
+        final ActorRef channelManager = system.actorOf(ChannelManagerActor.props());
 
         // REST API
         final Http http = Http.get(system);

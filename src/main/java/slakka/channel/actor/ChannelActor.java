@@ -12,9 +12,11 @@ import java.util.UUID;
 
 public class ChannelActor extends AbstractPersistentActor {
 
+    private final int snapshotInterval = 1000;
+
+    // protocols
     public static class GetMessages {}
 
-    private final int snapshotInterval = 1000;
     private final UUID id;
     private ChannelState state;
 
@@ -45,7 +47,7 @@ public class ChannelActor extends AbstractPersistentActor {
     }
 
     private void handleChannelCommand(ChannelCommand channelCommand) {
-        List<ChannelEvent> events = this.state.handleCommand(channelCommand, getSelf());
+        List<ChannelEvent> events = this.state.handleCommand(channelCommand, getContext());
         persistAll(events, (event) -> {
             this.state.applyEvent(event);
             getContext().getSystem().eventStream().publish(event);

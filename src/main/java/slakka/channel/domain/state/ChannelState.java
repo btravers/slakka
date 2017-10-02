@@ -1,5 +1,6 @@
 package slakka.channel.domain.state;
 
+import akka.actor.ActorContext;
 import akka.actor.ActorRef;
 import slakka.channel.domain.command.AddBot;
 import slakka.channel.domain.command.AddBotMessage;
@@ -54,12 +55,12 @@ public class ChannelState implements Serializable {
         return new ChannelState(this.name, new ArrayList<>(this.messages), new ArrayList<>(this.bots));
     }
 
-    public List<ChannelEvent> handleCommand(ChannelCommand command, ActorRef self) {
+    public List<ChannelEvent> handleCommand(ChannelCommand command, ActorContext context) {
         return Match(command).of(
                 Case($(instanceOf(AddPersonMessage.class)), (addPersonMessage) -> {
                     Message message = new PersonMessage(addPersonMessage.getContent(), addPersonMessage.getAuthor());
 
-                    getBots().forEach(bot -> bot.tell(message, self));
+                    getBots().forEach(bot -> bot.tell(message, context.self()));
 
                     ChannelEvent event = new MessageAdded(message);
                     return Collections.singletonList(event);

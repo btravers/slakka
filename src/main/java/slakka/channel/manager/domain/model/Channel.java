@@ -1,4 +1,4 @@
-package slakka.channel.domain.model;
+package slakka.channel.manager.domain.model;
 
 import java.io.Serializable;
 import java.util.UUID;

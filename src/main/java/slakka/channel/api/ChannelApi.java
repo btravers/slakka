@@ -8,7 +8,7 @@ import akka.http.javadsl.server.Route;
 import akka.japi.pf.PFBuilder;
 import akka.pattern.PatternsCS;
 import akka.util.Timeout;
-import slakka.channel.actor.ChannelManager;
+import slakka.channel.manager.actor.ChannelManagerActor;
 import slakka.channel.domain.command.AddPersonMessage;
 import slakka.channel.domain.model.PostMessage;
 import slakka.channel.exception.ChannelNotFoundException;
@@ -50,7 +50,7 @@ public class ChannelApi extends AllDirectives {
 
     private Route handleGetChannels() {
         return onComplete(
-                () -> PatternsCS.ask(this.channelManager, new ChannelManager.GetChannels(), timeout),
+                () -> PatternsCS.ask(this.channelManager, new ChannelManagerActor.GetChannels(), timeout),
                 maybeResult -> maybeResult
                         .map(result -> complete(StatusCodes.OK, result, Jackson.marshaller()))
                         .recover(new PFBuilder<Throwable, Route>()
@@ -63,7 +63,7 @@ public class ChannelApi extends AllDirectives {
 
     private Route handleGetMassagesForChannel(UUID id) {
         return onComplete(
-                () -> PatternsCS.ask(this.channelManager, new ChannelManager.GetChannelMessages(id), timeout),
+                () -> PatternsCS.ask(this.channelManager, new ChannelManagerActor.GetChannelMessages(id), timeout),
                 maybeResult -> maybeResult
                         .map(result -> complete(StatusCodes.OK, result, Jackson.marshaller()))
                         .recover(new PFBuilder<Throwable, Route>()
@@ -77,7 +77,7 @@ public class ChannelApi extends AllDirectives {
     private Route handlePostMessageForChannel(UUID id, PostMessage postMessage) {
         final AddPersonMessage command = new AddPersonMessage("author", postMessage.getContent());
         channelManager.tell(
-                new ChannelManager.SendCommand(id, command),
+                new ChannelManagerActor.SendCommandToChannel(id, command),
                 ActorRef.noSender()
         );
         return complete(StatusCodes.ACCEPTED);
