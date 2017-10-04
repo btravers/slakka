@@ -1,4 +1,4 @@
-package slakka.channel.api;
+package slakka.api.channel;
 
 import akka.actor.ActorRef;
 import akka.http.javadsl.marshallers.jackson.Jackson;
@@ -8,10 +8,12 @@ import akka.http.javadsl.server.Route;
 import akka.japi.pf.PFBuilder;
 import akka.pattern.PatternsCS;
 import akka.util.Timeout;
-import slakka.channel.manager.actor.ChannelManagerActor;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import slakka.api.model.Message;
 import slakka.channel.domain.command.AddPersonMessage;
-import slakka.channel.domain.model.PostMessage;
 import slakka.channel.exception.ChannelNotFoundException;
+import slakka.channel.manager.actor.ChannelManagerActor;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -21,11 +23,11 @@ import static akka.http.javadsl.server.PathMatchers.uuidSegment;
 
 public class ChannelApi extends AllDirectives {
 
-
     private final Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
     private final ActorRef channelManager;
 
-    public ChannelApi(ActorRef channelManager) {
+    @Inject
+    public ChannelApi(@Named("ChannelManagerActor") ActorRef channelManager) {
         this.channelManager = channelManager;
     }
 
@@ -39,8 +41,8 @@ public class ChannelApi extends AllDirectives {
                         pathPrefix(segment("messages"), () -> route(
                                 get(() -> this.handleGetMassagesForChannel(id)),
                                 post(() -> entity(
-                                        Jackson.unmarshaller(PostMessage.class),
-                                        postMessage -> this.handlePostMessageForChannel(id, postMessage)
+                                        Jackson.unmarshaller(Message.class),
+                                        message -> this.handlePostMessageForChannel(id, message)
                                 )),
                                 options(() -> complete(StatusCodes.OK))
                         ))
@@ -74,8 +76,8 @@ public class ChannelApi extends AllDirectives {
         );
     }
 
-    private Route handlePostMessageForChannel(UUID id, PostMessage postMessage) {
-        final AddPersonMessage command = new AddPersonMessage("author", postMessage.getContent());
+    private Route handlePostMessageForChannel(UUID id, Message message) {
+        final AddPersonMessage command = new AddPersonMessage("author", message.getContent());
         channelManager.tell(
                 new ChannelManagerActor.SendCommandToChannel(id, command),
                 ActorRef.noSender()

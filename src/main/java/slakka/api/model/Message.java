@@ -1,8 +1,8 @@
-package slakka.channel.domain.model;
+package slakka.api.model;
 
 import java.io.Serializable;
 
-public class PostMessage implements Serializable {
+public class Message implements Serializable {
 
     private String content;
 
