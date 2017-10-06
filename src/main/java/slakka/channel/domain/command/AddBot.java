@@ -6,7 +6,7 @@ public class AddBot implements ChannelCommand {
 
     private final ActorRef bot;
 
-    public AddBot(ActorRef bot) {
+    public AddBot(final ActorRef bot) {
         this.bot = bot;
     }
 

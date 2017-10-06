@@ -15,7 +15,7 @@ import slakka.channel.manager.domain.state.ChannelManagerState;
 import java.util.List;
 import java.util.UUID;
 
-public class ChannelManagerActor extends AbstractPersistentActor {
+public final class ChannelManagerActor extends AbstractPersistentActor {
 
     private final int snapshotInterval = 1000;
 
@@ -24,7 +24,7 @@ public class ChannelManagerActor extends AbstractPersistentActor {
     public static class SendCommandToChannel {
         private final UUID id;
         private final ChannelCommand command;
-        public SendCommandToChannel(UUID id, ChannelCommand command) {
+        public SendCommandToChannel(final UUID id, final ChannelCommand command) {
             this.id = id;
             this.command = command;
         }
@@ -37,7 +37,7 @@ public class ChannelManagerActor extends AbstractPersistentActor {
     }
     public static class GetChannelMessages {
         private final UUID id;
-        public GetChannelMessages(UUID id) {
+        public GetChannelMessages(final UUID id) {
             this.id = id;
         }
         UUID getId() {
@@ -77,7 +77,7 @@ public class ChannelManagerActor extends AbstractPersistentActor {
                 .build();
     }
 
-    private void handleChannelManagerCommand(ChannelManagerCommand channelManagerCommand) {
+    private void handleChannelManagerCommand(final ChannelManagerCommand channelManagerCommand) {
         List<ChannelManagerEvent> events = this.state.handleCommand(channelManagerCommand);
         persistAll(events, (event) -> {
             this.state.applyEvent(event, getContext());
@@ -88,17 +88,17 @@ public class ChannelManagerActor extends AbstractPersistentActor {
         });
     }
 
-    private void handleGetChannels(GetChannels getChannels) {
+    private void handleGetChannels(final GetChannels getChannels) {
         getSender().tell(this.state.getChannels(), getSelf());
     }
 
-    private void handleSendCommand(SendCommandToChannel sendCommandToChannel) {
+    private void handleSendCommand(final SendCommandToChannel sendCommandToChannel) {
         ActorRef channel = getContext().findChild(sendCommandToChannel.getId().toString())
                 .orElseThrow(ChannelNotFoundException::new);
         channel.forward(sendCommandToChannel.getCommand(), getContext());
     }
 
-    private void handleGetChannelMessages(GetChannelMessages getChannelMessages) {
+    private void handleGetChannelMessages(final GetChannelMessages getChannelMessages) {
         ActorRef channel = getContext().findChild(getChannelMessages.getId().toString())
                 .orElseThrow(ChannelNotFoundException::new);
         channel.forward(new ChannelActor.GetMessages(), getContext());

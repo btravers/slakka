@@ -7,7 +7,7 @@ public class AddBotMessage implements ChannelCommand {
     private final ActorRef bot;
     private final String content;
 
-    public AddBotMessage(ActorRef bot, String content) {
+    public AddBotMessage(final ActorRef bot, final String content) {
         this.bot = bot;
         this.content = content;
     }

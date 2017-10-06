@@ -5,7 +5,7 @@ import akka.actor.Props;
 import slakka.channel.domain.command.AddBotMessage;
 import slakka.channel.domain.model.Message;
 
-public class BotActor extends AbstractLoggingActor {
+public final class BotActor extends AbstractLoggingActor {
 
     // protocols
     public static class Mute {}
@@ -21,17 +21,17 @@ public class BotActor extends AbstractLoggingActor {
 
     private BotActor() {}
 
-    private void handleMute(Mute mute) {
+    private void handleMute(final Mute mute) {
         log().info("Mute bot");
         getContext().become(this.mute);
     }
 
-    private void handleUnMute(UnMute unMute) {
+    private void handleUnMute(final UnMute unMute) {
         log().info("Unmute bot");
         getContext().become(this.talkative);
     }
 
-    private void handleMessage(Message message) {
+    private void handleMessage(final Message message) {
         getSender().tell(new AddBotMessage(self(), "Hello"), getSelf());
     }
 

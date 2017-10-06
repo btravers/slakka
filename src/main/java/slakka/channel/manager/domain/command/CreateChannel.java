@@ -4,7 +4,7 @@ public class CreateChannel implements ChannelManagerCommand {
 
     private final String name;
 
-    public CreateChannel(String name) {
+    public CreateChannel(final String name) {
         this.name = name;
     }
 

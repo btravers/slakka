@@ -23,7 +23,7 @@ public class ChannelManagerState implements Serializable {
         this.channels = new ArrayList<>();
     }
 
-    public ChannelManagerState(List<Channel> channels) {
+    public ChannelManagerState(final List<Channel> channels) {
         this.channels = channels;
     }
 
@@ -35,7 +35,7 @@ public class ChannelManagerState implements Serializable {
         return new ChannelManagerState(new ArrayList<>(this.channels));
     }
 
-    public List<ChannelManagerEvent> handleCommand(ChannelManagerCommand command) {
+    public List<ChannelManagerEvent> handleCommand(final ChannelManagerCommand command) {
         return Match(command).of(
                 Case($(instanceOf(CreateChannel.class)), (createChannel) -> {
                     final String name = createChannel.getName();
@@ -56,7 +56,7 @@ public class ChannelManagerState implements Serializable {
         );
     }
 
-    public void applyEvent(ChannelManagerEvent event, ActorContext context) {
+    public void applyEvent(final ChannelManagerEvent event, final ActorContext context) {
         Match(event).of(
                 Case($(instanceOf(ChannelCreated.class)), channelCreated -> {
                     final Channel channel = channelCreated.getChannel();

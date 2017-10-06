@@ -5,7 +5,7 @@ public class AddPersonMessage implements ChannelCommand {
     private final String author;
     private final String content;
 
-    public AddPersonMessage(String author, String content) {
+    public AddPersonMessage(final String author, final String content) {
         this.author = author;
         this.content = content;
     }

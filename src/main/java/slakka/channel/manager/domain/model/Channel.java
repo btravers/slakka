@@ -8,7 +8,7 @@ public class Channel implements Serializable {
     private final UUID id;
     private final String name;
 
-    public Channel(UUID id, String name) {
+    public Channel(final UUID id, final String name) {
         this.id = id;
         this.name = name;
     }

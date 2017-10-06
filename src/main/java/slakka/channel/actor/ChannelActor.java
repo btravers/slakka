@@ -10,7 +10,7 @@ import slakka.channel.domain.state.ChannelState;
 import java.util.List;
 import java.util.UUID;
 
-public class ChannelActor extends AbstractPersistentActor {
+public final class ChannelActor extends AbstractPersistentActor {
 
     private final int snapshotInterval = 1000;
 
@@ -20,7 +20,7 @@ public class ChannelActor extends AbstractPersistentActor {
     private final UUID id;
     private ChannelState state;
 
-    private ChannelActor(UUID id, String name) {
+    private ChannelActor(final UUID id, final String name) {
         this.id = id;
         this.state = new ChannelState(name);
     }
@@ -46,7 +46,7 @@ public class ChannelActor extends AbstractPersistentActor {
                 .build();
     }
 
-    private void handleChannelCommand(ChannelCommand channelCommand) {
+    private void handleChannelCommand(final ChannelCommand channelCommand) {
         List<ChannelEvent> events = this.state.handleCommand(channelCommand, getContext());
         persistAll(events, (event) -> {
             this.state.applyEvent(event);
@@ -57,11 +57,11 @@ public class ChannelActor extends AbstractPersistentActor {
         });
     }
 
-    private void handleGetMessages(GetMessages getMessages) {
+    private void handleGetMessages(final GetMessages getMessages) {
         getSender().tell(this.state.getMessages(), getSelf());
     }
 
-    public static Props props(UUID id, String name) {
+    public static Props props(final UUID id, final String name) {
         return Props.create(ChannelActor.class, id, name);
     }
 }

@@ -1,4 +1,4 @@
-package slakka.api.model;
+package slakka.api.channel.model;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ public class Message implements Serializable {
 
     private String content;
 
-    public void setContent(String content) {
+    public void setContent(final String content) {
         this.content = content;
     }
 

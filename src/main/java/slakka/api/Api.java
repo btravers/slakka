@@ -6,13 +6,13 @@ import com.google.inject.Inject;
 import slakka.api.auth.AuthApi;
 import slakka.api.channel.ChannelApi;
 
-public class Api extends AllDirectives {
+public final class Api extends AllDirectives {
 
     private final ChannelApi channelApi;
     private final AuthApi authApi;
 
     @Inject
-    public Api(ChannelApi channelApi, AuthApi authApi) {
+    public Api(final ChannelApi channelApi, final AuthApi authApi) {
         this.channelApi = channelApi;
         this.authApi = authApi;
     }

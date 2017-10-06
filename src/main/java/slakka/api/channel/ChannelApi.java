@@ -10,10 +10,12 @@ import akka.pattern.PatternsCS;
 import akka.util.Timeout;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import slakka.api.model.Message;
+import slakka.api.channel.model.Channel;
+import slakka.api.channel.model.Message;
 import slakka.channel.domain.command.AddPersonMessage;
 import slakka.channel.exception.ChannelNotFoundException;
 import slakka.channel.manager.actor.ChannelManagerActor;
+import slakka.channel.manager.domain.command.CreateChannel;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -21,13 +23,13 @@ import java.util.concurrent.TimeUnit;
 import static akka.http.javadsl.server.PathMatchers.segment;
 import static akka.http.javadsl.server.PathMatchers.uuidSegment;
 
-public class ChannelApi extends AllDirectives {
+public final class ChannelApi extends AllDirectives {
 
     private final Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
     private final ActorRef channelManager;
 
     @Inject
-    public ChannelApi(@Named("ChannelManagerActor") ActorRef channelManager) {
+    public ChannelApi(@Named("ChannelManagerActor") final ActorRef channelManager) {
         this.channelManager = channelManager;
     }
 
@@ -35,6 +37,10 @@ public class ChannelApi extends AllDirectives {
         return pathPrefix(segment("channels"), () -> route(
                 pathEnd(() -> route(
                         get(this::handleGetChannels),
+                        post(() -> entity(
+                                Jackson.unmarshaller(Channel.class),
+                                this::handlePostChannels
+                        )),
                         options(() -> complete(StatusCodes.OK))
                 )),
                 pathPrefix(uuidSegment(), id ->
@@ -63,7 +69,19 @@ public class ChannelApi extends AllDirectives {
         );
     }
 
-    private Route handleGetMassagesForChannel(UUID id) {
+    private Route handlePostChannels(final Channel channel) {
+        return onComplete(
+                () -> PatternsCS.ask(this.channelManager, new CreateChannel(channel.getName()), timeout),
+                maybeResult -> maybeResult
+                        .map(result -> complete(StatusCodes.OK, result, Jackson.marshaller()))
+                        .recover(new PFBuilder<Throwable, Route>()
+                            .matchAny(ex -> complete(StatusCodes.INTERNAL_SERVER_ERROR, ex.getMessage()))
+                            .build())
+                        .get()
+        );
+    }
+
+    private Route handleGetMassagesForChannel(final UUID id) {
         return onComplete(
                 () -> PatternsCS.ask(this.channelManager, new ChannelManagerActor.GetChannelMessages(id), timeout),
                 maybeResult -> maybeResult
@@ -76,7 +94,7 @@ public class ChannelApi extends AllDirectives {
         );
     }
 
-    private Route handlePostMessageForChannel(UUID id, Message message) {
+    private Route handlePostMessageForChannel(final UUID id, final Message message) {
         final AddPersonMessage command = new AddPersonMessage("author", message.getContent());
         channelManager.tell(
                 new ChannelManagerActor.SendCommandToChannel(id, command),

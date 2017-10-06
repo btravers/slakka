@@ -6,7 +6,7 @@ public class MessageAdded implements ChannelEvent {
 
     private final Message message;
 
-    public MessageAdded(Message message) {
+    public MessageAdded(final Message message) {
         this.message = message;
     }
 

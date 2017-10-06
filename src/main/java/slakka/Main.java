@@ -16,7 +16,7 @@ import slakka.inject.ActorSystemModule;
 
 import java.util.concurrent.CompletionStage;
 
-public class Main {
+public final class Main {
 
     public static void main(String... args) throws Exception {
         Injector injector = Guice.createInjector(new ActorSystemModule());

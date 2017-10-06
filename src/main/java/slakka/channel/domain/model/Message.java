@@ -10,7 +10,7 @@ public abstract class Message implements Serializable {
     private final long date;
     private final String content;
 
-    protected Message(UUID id, long date, String content) {
+    protected Message(final UUID id, final long date, final String content) {
         this.id = id;
         this.date = date;
         this.content = content;

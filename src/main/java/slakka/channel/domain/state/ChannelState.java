@@ -27,13 +27,13 @@ public class ChannelState implements Serializable {
     private final List<Message> messages;
     private final List<ActorRef> bots;
 
-    public ChannelState(String name) {
+    public ChannelState(final String name) {
         this.name = name;
         this.messages = new ArrayList<>();
         this.bots = new ArrayList<>();
     }
 
-    public ChannelState(String name, List<Message> messages, List<ActorRef> bots) {
+    public ChannelState(final String name, final List<Message> messages, final List<ActorRef> bots) {
         this.name = name;
         this.messages = messages;
         this.bots = bots;
@@ -55,7 +55,7 @@ public class ChannelState implements Serializable {
         return new ChannelState(this.name, new ArrayList<>(this.messages), new ArrayList<>(this.bots));
     }
 
-    public List<ChannelEvent> handleCommand(ChannelCommand command, ActorContext context) {
+    public List<ChannelEvent> handleCommand(final ChannelCommand command, final ActorContext context) {
         return Match(command).of(
                 Case($(instanceOf(AddPersonMessage.class)), (addPersonMessage) -> {
                     Message message = new PersonMessage(addPersonMessage.getContent(), addPersonMessage.getAuthor());
@@ -80,7 +80,7 @@ public class ChannelState implements Serializable {
         );
     }
 
-    public void applyEvent(ChannelEvent event) {
+    public void applyEvent(final ChannelEvent event) {
         Match(event).of(
                 Case($(instanceOf(MessageAdded.class)), messageAdded -> this.messages.add(messageAdded.getMessage())),
                 Case($(instanceOf(BotAdded.class)), botAdded -> this.bots.add(botAdded.getBot())),

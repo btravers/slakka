@@ -6,7 +6,7 @@ public class BotAdded implements ChannelEvent {
 
     private final ActorRef bot;
 
-    public BotAdded(ActorRef bot) {
+    public BotAdded(final ActorRef bot) {
         this.bot = bot;
     }
 

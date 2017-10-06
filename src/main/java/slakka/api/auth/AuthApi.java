@@ -14,7 +14,7 @@ import java.security.Key;
 
 import static akka.http.javadsl.server.PathMatchers.segment;
 
-public class AuthApi extends AllDirectives {
+public final class AuthApi extends AllDirectives {
 
     private static final Key KEY = MacProvider.generateKey();
 
@@ -28,7 +28,7 @@ public class AuthApi extends AllDirectives {
         ));
     }
 
-    private Route handleLoginRequest(LoginRequest loginRequest) {
+    private Route handleLoginRequest(final LoginRequest loginRequest) {
         String token = Jwts.builder()
                 .setSubject(loginRequest.getUsername())
                 .signWith(SignatureAlgorithm.HS512, KEY)

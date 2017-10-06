@@ -9,12 +9,12 @@ public class BotMessage extends Message {
 
     private ActorRef bot;
 
-    public BotMessage(UUID id, long date, String content, ActorRef bot) {
+    public BotMessage(final UUID id, final long date, final String content, final ActorRef bot) {
         super(id, date, content);
         this.bot = bot;
     }
 
-    public BotMessage(String content, ActorRef bot) {
+    public BotMessage(final String content, final ActorRef bot) {
         super(UUID.randomUUID(), Instant.now().toEpochMilli(), content);
         this.bot = bot;
     }

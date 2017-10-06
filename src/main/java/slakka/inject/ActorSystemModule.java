@@ -8,8 +8,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import slakka.channel.manager.actor.ChannelManagerActor;
 
-
-public class ActorSystemModule extends AbstractModule {
+public final class ActorSystemModule extends AbstractModule {
 
     @Override
     protected void configure() {
