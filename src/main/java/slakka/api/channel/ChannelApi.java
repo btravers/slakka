@@ -33,7 +33,7 @@ public final class ChannelApi extends AllDirectives {
         this.channelManager = channelManager;
     }
 
-    public Route createRoute() {
+    public Route createRoute(String username) {
         return pathPrefix(segment("channels"), () -> route(
                 pathEnd(() -> route(
                         get(this::handleGetChannels),
@@ -48,7 +48,7 @@ public final class ChannelApi extends AllDirectives {
                                 get(() -> this.handleGetMassagesForChannel(id)),
                                 post(() -> entity(
                                         Jackson.unmarshaller(Message.class),
-                                        message -> this.handlePostMessageForChannel(id, message)
+                                        message -> this.handlePostMessageForChannel(id, username, message)
                                 )),
                                 options(() -> complete(StatusCodes.OK))
                         ))
@@ -94,8 +94,8 @@ public final class ChannelApi extends AllDirectives {
         );
     }
 
-    private Route handlePostMessageForChannel(final UUID id, final Message message) {
-        final AddPersonMessage command = new AddPersonMessage("author", message.getContent());
+    private Route handlePostMessageForChannel(final UUID id, final String username, final Message message) {
+        final AddPersonMessage command = new AddPersonMessage(username, message.getContent());
         channelManager.tell(
                 new ChannelManagerActor.SendCommandToChannel(id, command),
                 ActorRef.noSender()
