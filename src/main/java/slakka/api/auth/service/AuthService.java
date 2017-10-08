@@ -5,17 +5,24 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
 import java.security.Key;
+import java.util.Optional;
 
 public final class AuthService {
 
     private static final Key KEY = MacProvider.generateKey();
 
-    public String getUser(final String token) {
-        return Jwts.parser()
-                .setSigningKey(KEY)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public Optional<String> getUser(final String token) {
+        try {
+            return Optional.of(
+                    Jwts.parser()
+                            .setSigningKey(KEY)
+                            .parseClaimsJws(token)
+                            .getBody()
+                            .getSubject()
+            );
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     public String generateToken(final String username) {

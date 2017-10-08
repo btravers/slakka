@@ -33,7 +33,7 @@ public final class Api extends AllDirectives {
 
     private Route authenticated(final Function<String, Route> inner) {
         return optionalHeaderValueByName("Authorization", mayBeToken ->
-                mayBeToken.map(this.authService::getUser)
+                mayBeToken.flatMap(this.authService::getUser)
                         .map(username -> provide(username, inner))
                         .orElse(complete(StatusCodes.UNAUTHORIZED)));
     }
