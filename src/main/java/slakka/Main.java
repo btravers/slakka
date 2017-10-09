@@ -1,7 +1,10 @@
 package slakka;
 
 import akka.NotUsed;
+import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.ServerBinding;
@@ -12,6 +15,7 @@ import akka.stream.javadsl.Flow;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import slakka.api.Api;
+import slakka.channel.domain.event.MessageAdded;
 import slakka.inject.ActorSystemModule;
 
 import java.util.concurrent.CompletionStage;
