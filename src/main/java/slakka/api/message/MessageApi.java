@@ -12,7 +12,7 @@ import akka.stream.*;
 import akka.stream.javadsl.*;
 import com.google.inject.Inject;
 import org.reactivestreams.Publisher;
-import slakka.api.message.actor.MessageSuscriberActor;
+import slakka.api.message.actor.MessageSubscriberActor;
 import slakka.channel.domain.event.MessageAdded;
 
 public class MessageApi extends AllDirectives {
@@ -33,12 +33,7 @@ public class MessageApi extends AllDirectives {
     private Flow<Message, Message, NotUsed> greeter() {
 
         return Flow.fromGraph(GraphDSL.create((builder) -> {
-
             SinkShape<Message> fromWebSocket = Sink.<Message>ignore().shape();
-
-            final FlowShape<MessageAdded, Message> toWebSocket = builder.add(Flow.of(MessageAdded.class)
-                    .map(messageAdded -> TextMessage.create(messageAdded.getMessage().toString()))
-            );
 
             final Materializer materializer = ActorMaterializer.create(actorSystem);
 
@@ -46,10 +41,12 @@ public class MessageApi extends AllDirectives {
                     .toMat(Sink.asPublisher(AsPublisher.WITHOUT_FANOUT), Keep.both())
                     .run(materializer);
 
-            final ActorRef suscriberActorRef = this.actorSystem.actorOf(MessageSuscriberActor.props(messagesSource.first()));
-            this.actorSystem.eventStream().subscribe(suscriberActorRef, MessageAdded.class);
+            final ActorRef subscriberActorRef = this.actorSystem.actorOf(MessageSubscriberActor.props(messagesSource.first()));
+            this.actorSystem.eventStream().subscribe(subscriberActorRef, MessageAdded.class);
 
-            builder.from(Source.fromPublisher(messagesSource.second()).shape()).via(toWebSocket);
+            SourceShape<Message> toWebSocket = Source.fromPublisher(messagesSource.second())
+                    .<Message>map(messageAdded -> TextMessage.create(messageAdded.getMessage().toString()))
+                    .shape();
 
             return FlowShape.of(fromWebSocket.in(), toWebSocket.out());
         }));

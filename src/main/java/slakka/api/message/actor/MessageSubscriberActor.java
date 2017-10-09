@@ -5,11 +5,11 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import slakka.channel.domain.event.MessageAdded;
 
-public class MessageSuscriberActor extends AbstractLoggingActor {
+public class MessageSubscriberActor extends AbstractLoggingActor {
 
     private final ActorRef ws;
 
-    private MessageSuscriberActor(final ActorRef ws) {
+    private MessageSubscriberActor(final ActorRef ws) {
         this.ws = ws;
     }
 
@@ -21,7 +21,7 @@ public class MessageSuscriberActor extends AbstractLoggingActor {
     }
 
     public static Props props(ActorRef ws) {
-        return Props.create(MessageSuscriberActor.class, ws);
+        return Props.create(MessageSubscriberActor.class, ws);
     }
 
 }
